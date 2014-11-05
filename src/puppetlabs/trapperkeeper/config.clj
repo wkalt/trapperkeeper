@@ -92,19 +92,18 @@
 
 (defn parse-config-data
   "Parses the .ini, .edn, .conf, .json, or .properties configuration file(s)
-   and returns a map of configuration data. If no configuration file is
-   explicitly specified, will act as if it was given an empty configuration
-   file."
+  and returns a map of configuration data. If no configuration file is
+  explicitly specified, will act as if it was given an empty configuration
+  file."
   [cli-data]
   {:post [(map? %)]}
-  (let [debug? (or (:debug cli-data) false)
-        private-config (get cli-data :private-config {})]
-    (if-not (contains? cli-data :config)
+  (let [debug? (or (:debug cli-data) false)]
+    (ks/deep-merge
       {:debug debug?}
-      (-> private-config
-          (load-config)
-          (ks/deep-merge (:config cli-data))
-          (assoc :debug debug?)))))
+      (if (contains? cli-data :private-config)
+        (load-config (:private-config cli-data)) {})
+      (if (contains? cli-data :config)
+        (load-config (:config cli-data)) {}))))
 
 (defn initialize-logging!
   "Initializes the logging system based on the configuration data."

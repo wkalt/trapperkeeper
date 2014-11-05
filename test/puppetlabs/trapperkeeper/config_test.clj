@@ -51,6 +51,21 @@
                               :bip [1 2 {:hi "there"} 3]}}}
                  (test-fn2 test-svc)))))))
 
+  (testing "private-config is functional and is overridden by :config"
+    (with-app-with-cli-data app [test-service]
+      {:config "./dev-resources/config/conflictdir1/config.ini"
+       :private-config "./dev-resources/config/conflictdir1/config.conf"}
+      (let [test-svc  (get-service app :ConfigTestService)]
+        (testing "`get-config` function"
+          (is (= {:foo {:bar "\"barbar\"":somesetting 12, :baz "bazbaz"} :debug false}
+                (test-fn2 test-svc)))))))
+
+  (testing "fails if private-config is provided but malformed"
+    (is (thrown-with-msg?
+          FileNotFoundException
+          #"Configuration path 'abc' must exist and must be readable."
+          (bootstrap-services-with-cli-data [test-service] {:config "./dev-resources/config/inidir"
+                                                            :private-config "abc"}))))
   ;; NOTE: other individual file formats are tested in `typesafe-test`
 
   (testing "Can read values from a directory of .ini files"
