@@ -97,12 +97,14 @@
    file."
   [cli-data]
   {:post [(map? %)]}
-  (let [debug? (or (:debug cli-data) false)]
+  (let [debug? (or (:debug cli-data) false)
+        private-config (get cli-data :private-config {})]
     (if-not (contains? cli-data :config)
       {:debug debug?}
-      (-> (:config cli-data)
-         (load-config)
-         (assoc :debug debug?)))))
+      (-> private-config
+          (load-config)
+          (ks/deep-merge (:config cli-data))
+          (assoc :debug debug?)))))
 
 (defn initialize-logging!
   "Initializes the logging system based on the configuration data."

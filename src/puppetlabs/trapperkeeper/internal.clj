@@ -110,7 +110,8 @@
       --debug
       --bootstrap-config <bootstrap file>
       --config <.ini file or directory>
-      --plugins <plugins directory>"
+      --plugins <plugins directory>
+      --private-config <.ini file or directory>"
   [cli-args]
   {:pre  [(sequential? cli-args)]
    :post [(map? %)]}
@@ -119,7 +120,11 @@
                      ["-c" "--config CONFIG-PATH"
                       (str "Path to a configuration file or directory of configuration files. "
                            "See the documentation for a list of supported file types.")]
-                     ["-p" "--plugins PLUGINS-DIRECTORY" "Path to directory plugin .jars"]]
+                     ["-p" "--plugins PLUGINS-DIRECTORY" "Path to directory plugin .jars"]
+                     ["-pc" "--private-config PRIVATE-CONFIG-PATH"
+                      (str "Path to a configuration file or directory of configuration files. "
+                           "If provided, the referenced config will be merged with "
+                           "that defined by the user")]]
         required    []]
     (first (cli! cli-args specs required))))
 
